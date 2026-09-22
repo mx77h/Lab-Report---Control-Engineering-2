@@ -1,0 +1,23 @@
+\documentclass[state=Report]{mcidoc}
+\usepackage{tabularx}
+
+
+
+% Konfiguration aller Metadaten für den Report (mit erzwungenen Pfaden "/")
+\SetMCI{Language = EN,
+    Degree = BSc,
+    Title = {Lab Report},
+    StudentID = {62200181, 12313575},
+    Student/Name = {Mathias Außerlechner, Benedikt Motzet}, % <--- WICHTIG: Füllt den Namen auf dem Deckblatt aus
+    Report/Supervisor/Name = {FH-Prof. Yeongmi Kim, PhD}, % <--- Supervisor auf dem Deckblatt
+    Report/Cohort = {BA-MECH-24-4C},     % Optional: Kohorte für das Deckblatt
+    Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2}}, % Optional: Vorlesung für das Deckblatt
+    Report/Date = {\today} % Optional: Datum auf dem Deckblatt
+}
+
+\begin{document}
+
+\include{chapters/introduction}
+
+
+\end{document}
