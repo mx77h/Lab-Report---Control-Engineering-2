@@ -21,6 +21,14 @@
 \usepackage[backend=biber, style=ieee]{biblatex}
 \addbibresource{Vorlagen.bib}
 \sisetup{locale = UK, uncertainty-mode = separate} % Unsicherheit mit ± (M031)
+\KOMAoptions{listof=totoc}
+\newcounter{romanpage}
+% Seitenzahl + Name auch auf Kapitel-Startseiten (Stil "plain") (M010)
+\makeatletter
+\ofoot*{\thepage}
+\ifoot*{\Global@StudentName}
+\makeatother
+\KOMAoptions{plainfootsepline=true}
 
 \SetMCI{Language = EN,
     Degree = BSc,
@@ -32,12 +40,19 @@
     Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2}},
     Report/Date = {\today},
     Report/Mode = Lab,
-    Report/ToC/Primary = set,
-    Report/ToC/Figures = set,
-    Report/ToC/Tables  = set,
+    Report/ToC/Primary = unset,
+    Report/ToC/Figures = unset,
+    Report/ToC/Tables  = unset,
 }
 
 \begin{document}
+
+% ---------- Vorspann: römische Seitenzahlen (M010) ----------
+\pagenumbering{Roman}
+\tableofcontents
+\clearpage
+\setcounter{romanpage}{\value{page}}
+\pagenumbering{arabic}
 
 % #####################################################################
 \chapter{Text and Wording}
@@ -63,7 +78,7 @@ underlined.
 \end{enumerate}
 %<<<
 
-\section{Cross-References (Festlegung)}
+\section{Cross-References}
 %>>> Einheitliche Verweise: Figure~ / Table~ / Equation~ / Chapter~ / Section~
 The measured data are listed in Table~\ref{tab:simple} and plotted in
 Figure~\ref{fig:plot}. The model follows from Equation~\eqref{eq:pt1}
@@ -114,7 +129,7 @@ Equation~\eqref{eq:pt1}.
 \end{tabular}
 %<<<
 
-\section{Unnumbered Equation (Festlegung)}
+\section{Unnumbered Equation (M040)}
 %>>> Nicht referenzierte Gleichungen: equation* (ohne Nummer)
 \begin{equation*}
   \omega_\mathrm{n} = \sqrt{\frac{k}{m}}
@@ -184,7 +199,7 @@ Table~\ref{tab:simple} lists the measured step responses.
     \midrule
     1 & \num{2.00} & \num{4.20} \\
     2 & \num{4.00} & \num{8.35} \\
-    3 & \num{6.00} & \num{12.6} \\
+    3 & \num{6.00} & \num{12.60} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -397,17 +412,20 @@ reached.
 
 \section{Short Literal Quotation (M074)}
 %>>> Im Fließtext, in Anführungszeichen, kursiv (sparsam verwenden, M073)
-According to the datasheet, the motor is \enquote{\textit{designed for
-continuous operation}}~\cite{datenblatt}.
+%    Platzhalter: durch den exakten Wortlaut der Quelle ersetzen!
+According to the datasheet, the motor is \enquote{\textit{exact wording
+from the source}}~\cite{datenblatt}.
 %<<<
 
 \section{Long Literal Quotation (M075)}
 %>>> Eigener Absatz, eingerückt, geringerer Zeilenabstand
+%    Platzhalter: zeichengetreu aus der Quelle übernehmen; Auslassung [\dots],
+%    eigene Ergänzung [in eckigen Klammern], Fehler im Original [sic]
 \begin{displayquote}
   \setstretch{1.0}
-  The controller parameters [of the PID controller] are obtained directly
-  from the step response [\dots] and are therefore easy to apply in
-  practice.~\cite{astrom2004}
+  Exact wording of the source, reproduced character by character [own
+  addition in square brackets] and with omissions marked [\dots] as shown
+  here.~\cite{astrom2004}
 \end{displayquote}
 %<<<
 
@@ -446,6 +464,13 @@ T   = t(find(y >= y63, 1));   % first sample above threshold
 \end{lstlisting}
 %<<<
 
+% ---------- Nachspann: römisch fortlaufend (M010) ----------
+\clearpage
+\pagenumbering{Roman}
+\setcounter{page}{\value{romanpage}}
+
 \printbibliography[heading=bibintoc]
+\listoffigures
+\listoftables
 
 \end{document}

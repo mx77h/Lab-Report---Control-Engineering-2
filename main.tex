@@ -45,7 +45,7 @@
 % ---------- Hauptteil: arabische Seitenzahlen ----------
 \include{chapters/introduction}
 
-% ---------- Nachspann: römisch fortlaufend (M011) ----------
+% ---------- Nachspann: römisch fortlaufend (M010) ----------
 \clearpage
 \pagenumbering{Roman}
 \setcounter{page}{\value{romanpage}}
@@ -54,13 +54,15 @@
 \listoffigures
 \listoftables
 
-\addchap{List of Symbols}              % Formelzeichenübersicht (M048)
+\addchap{List of Symbols}              % Formelzeichenübersicht (M049)
 \begin{tabularx}{\textwidth}{l X l}
-  \textbf{Symbol} & \textbf{Description} & \textbf{Unit} \\
-  \hline
-  $U$ & Voltage    & \unit{\volt}   \\
-  $I$ & Current    & \unit{\ampere} \\
-  $R$ & Resistance & \unit{\ohm}    \\
+  \toprule
+  Symbol & Description & Unit \\
+  \midrule
+  $U$ & voltage    & \unit{\volt}   \\
+  $I$ & current    & \unit{\ampere} \\
+  $R$ & resistance & \unit{\ohm}    \\
+  \bottomrule
 \end{tabularx}
 
 \end{document}
