@@ -1,0 +1,169 @@
+\chapter{Results}\label{ch:results}
+
+\section{Identified Transfer Function}\label{sec:res-identification}
+% Daten: data/step_response_12V.csv (aus matlab.mat, resp_12V, jede 50. Abtastung)
+The least-squares fit yields $K = \qty{0.433}{\radian\per\second\per\volt}$,
+$\tau_1 = \qty{7.6}{\milli\second}$ and $\tau_2 = \qty{0.103}{\second}$ with a
+coefficient of determination of \num{0.996} and a root-mean-square deviation of
+\qty{0.064}{\radian\per\second}. Measurement and model are compared in
+Figure~\ref{fig:identification}.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.8\textwidth, height=0.36\textwidth,
+        xlabel={$t$/\unit{\second}}, ylabel={$\omega$/(\unit{\radian\per\second})},
+        xmin=0, xmax=1.5, ymin=0, ymax=6,
+        grid=major, grid style={gray!30},
+        legend pos=south east, legend cell align=left,
+        /pgf/number format/.cd, use period,
+      ]
+      \addplot[black, only marks, mark=*, mark size=0.6pt]
+        table[x=t, y=omega_meas, col sep=comma] {data/step_response_12V.csv};
+      \addlegendentry{measurement}
+      \addplot[black, dashed, thick]
+        table[x=t, y=omega_model, col sep=comma] {data/step_response_12V.csv};
+      \addlegendentry{identified PT2 model}
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Measured and identified step response]{Measured angular velocity of
+    the output shaft (dots, every \qty{5}{\milli\second}) and step response
+    of the identified PT2 model (dashed) for an input step of \qty{12}{\volt}}
+  \label{fig:identification}
+\end{figure}
+
+As a plausibility check, the static gain is calculated from the mean rotational
+speed $n_\infty = \qty{49.8}{\per\minute}$ for $t \geq \qty{0.8}{\second}$:
+\begin{equation*}
+  \omega_\infty = \frac{2\pi \cdot \qty{49.8}{\per\minute}}{\qty{60}{\second\per\minute}}
+  = \qty{5.22}{\radian\per\second}, \qquad
+  K = \frac{\omega_\infty}{u_0}
+  = \frac{\qty{5.22}{\radian\per\second}}{\qty{12}{\volt}}
+  = \qty{0.435}{\radian\per\second\per\volt}.
+\end{equation*}
+This deviates by less than \qty{1}{\percent} from the fitted gain. With
+Equation~\eqref{eq:pt3}, the plant for the position control is
+\begin{equation*}
+  G_\mathrm{p}(s) = \frac{\qty{0.433}{\radian\per\second\per\volt}}
+  {s\,(\qty{0.0076}{\second} \cdot s + 1)(\qty{0.103}{\second} \cdot s + 1)}.
+\end{equation*}
+
+\section{Controller Parameters and Simulation}\label{sec:res-simulation}
+% Werte aus squarefit.m; geprüft mit margin(): K_cr = 325.4, P_cr = 0.1759 s
+The root locus of $G_\mathrm{p}(s)$ yields a critical gain of
+$K_\mathrm{cr} = \qty{325}{\volt\per\radian}$ and a period of
+$P_\mathrm{cr} = \qty{0.176}{\second}$. The tuning rules give
+$K_\mathrm{P} = 0.6 \cdot \qty{325}{\volt\per\radian} = \qty{195}{\volt\per\radian}$,
+$T_\mathrm{I} = 0.5 \cdot \qty{0.176}{\second} = \qty{0.0879}{\second}$ and
+$T_\mathrm{D} = 0.125 \cdot \qty{0.176}{\second} = \qty{0.0220}{\second}$, and thus
+\begin{equation*}
+  K_\mathrm{I} = \frac{K_\mathrm{P}}{T_\mathrm{I}}
+  = \frac{\qty{195}{\volt\per\radian}}{\qty{0.0879}{\second}}
+  = \qty{2.22e3}{\volt\per\radian\per\second}
+\end{equation*}
+and $K_\mathrm{D} = K_\mathrm{P}\,T_\mathrm{D}
+= \qty{195}{\volt\per\radian} \cdot \qty{0.0220}{\second}
+= \qty{4.28}{\volt\second\per\radian}$.
+
+% TODO: simulierte Sprungantwort des geschlossenen Kreises (PID_simulation.slx)
+
+\section{Real-Time Control}\label{sec:res-realtime}
+% Daten: matlab.mat (M1--M8, disturbance), Parameter: Controll_eng_pid_tuning.xlsx
+% Kennwerte: Überschwingen bez. auf 45°, Anstiegszeit 10--90 %, Ausregelzeit ±2 % (±0.9°)
+Table~\ref{tab:runs} summarises the controller gains of all runs and the
+characteristics of the step responses: the rise time $t_\mathrm{r}$ between
+\qty{10}{\percent} and \qty{90}{\percent} of the reference, the settling time
+$t_\mathrm{s}$ for a tolerance band of \qty{\pm 2}{\percent}, and the control
+error $e$ (reference minus actual position) at the end of the recording. The
+smallest position increment of the encoder is \ang{0.18}.
+
+\begin{table}[H]
+  \centering
+  \caption[Controller gains and step response characteristics]{Controller gains
+    and characteristics of the measured step responses for a reference step of
+    \ang{45} (in runs~3 and~4, the position is still changing at the end of
+    the recording after \qty{1}{\second})}
+  \label{tab:runs}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{
+      S[table-format=1.0]
+      S[table-format=3.0]
+      S[table-format=4.1]
+      S[table-format=1.2]
+      S[table-format=1.1]
+      S[table-format=1.3]
+      S[table-format=1.3]
+      S[table-format=-1.1]
+    }
+    \toprule
+    {Run} & {$K_\mathrm{P}$/(\unit{\volt\per\radian})}
+      & {$K_\mathrm{I}$/(\unit{\volt\per\radian\per\second})}
+      & {$K_\mathrm{D}$/(\unit{\volt\second\per\radian})}
+      & {Overshoot/\unit{\percent}} & {$t_\mathrm{r}$/\unit{\second}}
+      & {$t_\mathrm{s}$/\unit{\second}} & {$e$/\unit{\degree}} \\
+    \midrule
+    2 & 195 & 2219.7 & 4.28 &  3.2 & 0.173 & 0.408 &  0.0 \\
+    1 & 195 &   22.2 & 4.28 &  0.0 & 0.175 & 0.291 &  0.0 \\
+    3 &   1 &   22.2 & 4.28 & {--} & 0.688 & {--}  & -6.3 \\
+    4 &  20 &   22.2 & 4.28 & {--} & 0.472 & {--}  & -5.4 \\
+    5 & 195 &   22.2 & 8.00 &  0.0 & 0.195 & 0.347 &  0.0 \\
+    6 & 195 &   22.2 & 1.00 &  4.8 & 0.173 & 0.311 &  0.0 \\
+    7 & 300 &   22.2 & 4.28 &  0.4 & 0.173 & 0.251 &  0.0 \\
+    8 & 300 &   22.2 & 6.00 &  0.0 & 0.172 & 0.272 &  0.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+With the calculated Ziegler--Nichols parameters (run~2), the position overshoots
+by \qty{3.2}{\percent} and settles after \qty{0.41}{\second}. Reducing
+$K_\mathrm{I}$ by a factor of 100 (run~1) removes the overshoot and shortens the
+settling time to \qty{0.29}{\second}; run~1 is the reference for the further
+variations. Figure~\ref{fig:runs} compares both runs with a strongly reduced
+$K_\mathrm{P}$ (run~3).
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.8\textwidth, height=0.36\textwidth,
+        xlabel={$t$/\unit{\second}}, ylabel={$\theta$/\unit{\degree}},
+        xmin=0, xmax=1, ymin=0, ymax=75,
+        grid=major, grid style={gray!30},
+        legend pos=north west, legend columns=2, legend cell align=left,
+        /pgf/number format/.cd, use period,
+      ]
+      \addplot[black, thick] table[x=t, y=M2, col sep=comma] {data/position_steps.csv};
+      \addlegendentry{run 2 (Ziegler--Nichols)}
+      \addplot[black, thick, dashed] table[x=t, y=M1, col sep=comma] {data/position_steps.csv};
+      \addlegendentry{run 1 ($K_\mathrm{I}$ reduced)}
+      \addplot[black, thick, dashdotted] table[x=t, y=M3, col sep=comma] {data/position_steps.csv};
+      \addlegendentry{run 3 ($K_\mathrm{P}$ reduced)}
+      \addplot[black, dotted, domain=0:1] {45};
+      \addlegendentry{reference}
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Measured position step responses]{Measured angular position of the
+    pointer for a reference step of \ang{45} with the calculated
+    Ziegler--Nichols parameters (solid), reduced integral gain (dashed) and
+    reduced proportional gain (dash-dotted); gains see Table~\ref{tab:runs}}
+  \label{fig:runs}
+\end{figure}
+
+With $K_\mathrm{P} = \qty{1}{\volt\per\radian}$ and
+\qty{20}{\volt\per\radian} (runs~3 and~4), the position does not settle within
+the recording and still exceeds the reference by \ang{6.3} and \ang{5.4} at
+$t = \qty{1}{\second}$. A larger $K_\mathrm{D}$ (run~5) prevents the overshoot
+but slows the response, a smaller $K_\mathrm{D}$ (run~6) causes
+\qty{4.8}{\percent} overshoot. The shortest settling time of
+\qty{0.25}{\second} is reached with $K_\mathrm{P} = \qty{300}{\volt\per\radian}$
+(run~7) at an overshoot of one encoder increment, which vanishes with a larger
+$K_\mathrm{D}$ (run~8). In all runs, the control value saturates at
+\qty{12}{\volt} directly after the step. In the disturbance test with the gains
+of run~1, the pointer is deflected by up to \ang{2.2} and returns to within
+\ang{0.5} of the reference after approximately \qty{1.7}{\second}. For the
+tracking of a sinusoidal reference (Table~\ref{tab:sine} in
+Appendix~\ref{app:data}), increasing $K_\mathrm{P}$ from
+\qtyrange{195}{1200}{\volt\per\radian} reduces the RMS control error from
+\qtyrange{0.59}{0.12}{\degree}, while the maximum control value rises from
+\qtyrange{3.5}{10.6}{\volt} and becomes increasingly noisy.

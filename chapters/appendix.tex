@@ -1,0 +1,103 @@
+% =====================================================================
+% Anhang: zusätzliche Inhalte, die nicht in die 10 Seiten passen.
+% Seitenzahlen laufen römisch weiter (M010), Kapitel werden A, B, C ... nummeriert.
+% Jeder Inhalt hier muss im Haupttext referenziert werden (M053, M060).
+% =====================================================================
+
+\chapter{Derivation of the Analytical Model}\label{app:model}
+% Quelle: eigene Vorbereitung (preperation31final.mlx)
+Laplace transformation of Equations~\eqref{eq:electrical}
+and~\eqref{eq:mechanical} with zero initial conditions and
+$\Omega(s) = s\,\Theta(s)$ gives
+\begin{equation*}
+  U(s) = (R + L s)\, I(s) + k_\mathrm{E}\, s\, \Theta(s), \qquad
+  J s^2\, \Theta(s) = k_\mathrm{M}\, I(s) - b\, s\, \Theta(s).
+\end{equation*}
+Solving the mechanical equation for the current,
+\begin{equation*}
+  I(s) = \frac{(J s^2 + b s)\, \Theta(s)}{k_\mathrm{M}},
+\end{equation*}
+and substituting it into the electrical equation yields
+\begin{align*}
+  U(s) &= \left[ \frac{(R + L s)(J s^2 + b s)}{k_\mathrm{M}}
+  + k_\mathrm{E}\, s \right] \Theta(s) \\
+  &= \frac{s \left[ L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M}) \right]}
+         {k_\mathrm{M}}\, \Theta(s),
+\end{align*}
+from which the transfer function from the armature voltage to the angular
+position in Equation~\eqref{eq:gp1} follows. It is a third-order system with an
+integrator, since the angular position is the integral of the angular velocity.
+\begin{equation}
+  G_\mathrm{p1}(s) = \frac{\Theta(s)}{U(s)}
+  = \frac{k_\mathrm{M}}{s \left[ L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M}) \right]}
+  \label{eq:gp1}
+\end{equation}
+With $\Omega(s) = s\,\Theta(s)$, the transfer function from the armature voltage
+to the angular velocity in Equation~\eqref{eq:gp2} is a second-order lag element
+(PT2), which justifies the PT2 approach in Section~\ref{sec:identification}.
+\begin{equation}
+  G_\mathrm{p2}(s) = \frac{\Omega(s)}{U(s)} = s\,G_\mathrm{p1}(s)
+  = \frac{k_\mathrm{M}}{L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M})}
+  \label{eq:gp2}
+\end{equation}
+
+For the state-space model, the angular position, the angular velocity and the
+armature current are selected as state variables,
+$\mathbf{x} = \begin{bmatrix} \theta & \omega & i \end{bmatrix}^\mathrm{T}$.
+The armature voltage $u$ is the input and the angular position $\theta$ is the
+output. Rearranging Equations~\eqref{eq:electrical} and~\eqref{eq:mechanical}
+for the derivatives of the state variables gives the state-space model in
+Equation~\eqref{eq:ss}.
+\begin{equation}
+  \dot{\mathbf{x}} = \mathbf{A}\mathbf{x} + \mathbf{b}\,u, \qquad
+  \theta = \mathbf{c}^\mathrm{T}\mathbf{x} + d\,u
+  \label{eq:ss}
+\end{equation}
+with
+\begin{equation*}
+  \mathbf{A} =
+  \begin{bmatrix}
+    0 & 1 & 0 \\[1ex]
+    0 & -\dfrac{b}{J} & \dfrac{k_\mathrm{M}}{J} \\[1.5ex]
+    0 & -\dfrac{k_\mathrm{E}}{L} & -\dfrac{R}{L}
+  \end{bmatrix}, \qquad
+  \mathbf{b} =
+  \begin{bmatrix} 0 \\ 0 \\ \dfrac{1}{L} \end{bmatrix}, \qquad
+  \mathbf{c}^\mathrm{T} = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}, \qquad
+  d = 0.
+\end{equation*}
+
+\chapter{Additional Measurement Data}\label{app:data}
+% Daten: matlab.mat (sine ... sine5), Parameter: Controll_eng_pid_tuning.xlsx
+% Auswertung für t > 2 s (eingeschwungen)
+In addition to the step responses, the tracking of a sinusoidal reference
+with an amplitude of \ang{10} and a frequency of \qty{0.8}{\hertz} is measured
+for different proportional gains, while $K_\mathrm{I}$ and $K_\mathrm{D}$ are
+kept constant. The results are listed in Table~\ref{tab:sine}.
+
+\begin{table}[H]
+  \centering
+  \caption[Tracking of a sinusoidal reference]{Control error and control value
+    for the tracking of a sinusoidal reference (amplitude \ang{10}, frequency
+    \qty{0.8}{\hertz}) with $K_\mathrm{I} = \qty{22.2}{\volt\per\radian\per\second}$
+    and $K_\mathrm{D} = \qty{4.28}{\volt\second\per\radian}$, evaluated for
+    $t > \qty{2}{\second}$}
+  \label{tab:sine}
+  \begin{tabular}{
+      S[table-format=4.0]
+      S[table-format=1.2]
+      S[table-format=1.2]
+      S[table-format=2.1]
+    }
+    \toprule
+    {$K_\mathrm{P}$/(\unit{\volt\per\radian})} & {RMS of $e$/\unit{\degree}}
+      & {max.\ $|e|$/\unit{\degree}} & {max.\ $|u|$/\unit{\volt}} \\
+    \midrule
+     195 & 0.59 & 0.86 &  3.5 \\
+     300 & 0.38 & 0.59 &  3.6 \\
+     600 & 0.19 & 0.34 &  4.2 \\
+     800 & 0.15 & 0.37 &  6.3 \\
+    1200 & 0.12 & 0.42 & 10.6 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

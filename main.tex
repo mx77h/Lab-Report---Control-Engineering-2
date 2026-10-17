@@ -7,6 +7,11 @@
 % ---------- Ergänzungen für die MCI-Formalkriterien ----------
 \sisetup{locale = UK, uncertainty-mode = separate} % Dezimalpunkt (M030), Unsicherheit mit ± (M031)
 \KOMAoptions{listof=totoc}                        % Verzeichnisse erscheinen im Inhaltsverzeichnis
+\KOMAoptions{numbers=noendperiod}                 % sonst "Figure 2.1.:" sobald ein Anhang existiert (M018)
+\AtBeginEnvironment{table}{\setstretch{1.1}}      % Tabellen kompakter als Fließtext (1.5), einheitlich (M018)
+\newenvironment{legendtable}[1]                  % Legende zu Gleichungen (M042), gleicher Zeilenabstand wie Tabellen
+  {\par\setstretch{1.1}\noindent\begin{tabular}{#1}}
+  {\end{tabular}\par}
 \usepackage[autostyle=true]{csquotes}            % englische Anführungszeichen
 \usepackage[backend=biber, style=ieee]{biblatex}  % IEEE-Zitierstil (M080)
 \addbibresource{references.bib}
@@ -21,12 +26,12 @@
 \SetMCI{Language = EN,
     Degree = BSc,
     Title = {Lab Report},
-    StudentID = {62200181, 12313575},
-    Student/Name = {Mathias Außerlechner, Benedikt Motzet},
+    StudentID = {62200181, 12313575, 52408872},
+    Student/Name = {Mathias Außerlechner, Benedikt Motzet, Urs Müller},
     Report/Supervisor/Name = {FH-Prof. Yeongmi Kim, PhD},
     Report/Cohort = {BA-MECH-24-4C},
     Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2}},
-    Report/Date = {\today},
+    Report/Date = {October 16, 2026},  % Labortermin (Vorgabe Laboranleitung)
     Report/Mode = Lab,                 % "Lab Supervisor" auf dem Deckblatt
     Report/ToC/Primary = unset,        % Verzeichnisse setzen wir unten selbst
     Report/ToC/Figures = unset,
@@ -44,6 +49,9 @@
 
 % ---------- Hauptteil: arabische Seitenzahlen ----------
 \include{chapters/introduction}
+\include{chapters/procedure}
+\include{chapters/results}
+\include{chapters/discussion}
 
 % ---------- Nachspann: römisch fortlaufend (M010) ----------
 \clearpage
@@ -55,14 +63,47 @@
 \listoftables
 
 \addchap{List of Symbols}              % Formelzeichenübersicht (M049)
+\begingroup
+\setlength{\parfillskip}{0pt plus 1fil}  % sonst 10 pt breiter als der Satzspiegel (M057)
+\noindent
 \begin{tabularx}{\textwidth}{l X l}
   \toprule
   Symbol & Description & Unit \\
   \midrule
-  $U$ & voltage    & \unit{\volt}   \\
-  $I$ & current    & \unit{\ampere} \\
-  $R$ & resistance & \unit{\ohm}    \\
+  $\mathbf{A}$   & system matrix of the state-space model & -- \\
+  $b$            & viscous friction coefficient & \unit{\newton\metre\second\per\radian} \\
+  $\mathbf{b}$   & input vector of the state-space model & -- \\
+  $\mathbf{c}$   & output vector of the state-space model & -- \\
+  $d$            & feedthrough of the state-space model & -- \\
+  $e$            & control error (reference minus actual position) & \unit{\degree} \\
+  $G$            & transfer function & -- \\
+  $i$            & armature current & \unit{\ampere} \\
+  $J$            & moment of inertia of the rotor & \unit{\kilogram\metre\squared} \\
+  $k$            & motor constant ($k_\mathrm{M}$: torque constant, $k_\mathrm{E}$: back-EMF constant)
+                 & \unit{\newton\metre\per\ampere}, \unit{\volt\second\per\radian} \\
+  $K$            & gain ($K$: static gain of the plant; $K_\mathrm{P}$, $K_\mathrm{I}$,
+                   $K_\mathrm{D}$: controller gains; $K_\mathrm{cr}$: critical gain) & -- \\
+  $L$            & armature inductance & \unit{\henry} \\
+  $n$            & rotational speed of the output shaft & \unit{\per\minute} \\
+  $N$            & transmission ratio of the gearbox & 1 \\
+  $P$            & period of oscillation & \unit{\second} \\
+  $R$            & armature resistance & \unit{\ohm} \\
+  $s$            & Laplace variable & \unit{\per\second} \\
+  $t$            & time & \unit{\second} \\
+  $T$            & controller time constant ($T_\mathrm{I}$: integral, $T_\mathrm{D}$: derivative)
+                 & \unit{\second} \\
+  $u$            & armature voltage & \unit{\volt} \\
+  $\mathbf{x}$   & state vector & -- \\
+  $\theta$       & angular position & \unit{\radian} \\
+  $\tau$         & time constant of the PT2 model & \unit{\second} \\
+  $\omega$       & angular velocity & \unit{\radian\per\second} \\
   \bottomrule
 \end{tabularx}
+\par
+\endgroup
+
+% ---------- Anhang: römisch fortlaufend, zählt nicht zu den 10 Seiten ----------
+\appendix
+\include{chapters/appendix}
 
 \end{document}

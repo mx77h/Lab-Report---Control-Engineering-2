@@ -1,6 +1,9 @@
 # Projekt: Laborbericht Control Engineering II (MCI)
 
-- Autoren: Mathias Außerlechner, Benedikt Motzet; Betreuerin: FH-Prof. Yeongmi Kim, PhD
+- Autoren: Mathias Außerlechner (62200181), Benedikt Motzet (12313575), Urs Müller (52408872);
+  Betreuerin: FH-Prof. Yeongmi Kim, PhD
+- Laborbericht max. 10 Seiten Hauptteil (Laboranleitung); Anhang zählt nicht.
+  Kapitel 4 (Discussion and Interpretation) ist der wichtigste Teil → dort Platz lassen.
 - Kohorte: BA-MECH-24-4C
 - LaTeX mit der MCI-Klasse `mcidoc.cls` (state=Report). Die .cls NICHT verändern.
 - Bericht ist auf Englisch. Mit mir (Benedikt) bitte auf Deutsch kommunizieren:

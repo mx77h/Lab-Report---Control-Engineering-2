@@ -33,8 +33,8 @@
 \SetMCI{Language = EN,
     Degree = BSc,
     Title = {Snippets},
-    StudentID = {62200181, 12313575},
-    Student/Name = {Mathias Außerlechner, Benedikt Motzet},
+    StudentID = {62200181, 12313575, 52408872},
+    Student/Name = {Mathias Außerlechner, Benedikt Motzet, Urs Müller},
     Report/Supervisor/Name = {FH-Prof. Yeongmi Kim, PhD},
     Report/Cohort = {BA-MECH-24-4C},
     Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2}},
@@ -439,6 +439,10 @@ The figure was exported with the function \texttt{exportgraphics}~\cite{matlabdo
 % #####################################################################
 %>>> Formelzeichenverzeichnis (M049): Einheit, bei Konstanten Wert;
 %    keine Indizes einzeln, keine Operatoren (Delta, Sigma), kein pi, e
+%    Gruppe + \parfillskip: sonst 10 pt breiter als der Satzspiegel (M057)
+\begingroup
+\setlength{\parfillskip}{0pt plus 1fil}
+\noindent
 \begin{tabularx}{\textwidth}{l X l}
   \toprule
   Symbol & Description & Unit \\
@@ -452,6 +456,8 @@ The figure was exported with the function \texttt{exportgraphics}~\cite{matlabdo
   $g$ & gravitational acceleration, \qty{9.81}{\metre\per\second\squared} & \unit{\metre\per\second\squared} \\
   \bottomrule
 \end{tabularx}
+\par
+\endgroup
 %<<<
 
 % #####################################################################

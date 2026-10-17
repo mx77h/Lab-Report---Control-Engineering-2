@@ -1,8 +1,25 @@
-\chapter{Introduction}
-dadaada
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.8\textwidth]{}
-	\caption{Ersatzschaltbild}
-	\label{fig:1_ersatzsschaltbild}
-\end{figure}
+\chapter{Introduction}\label{ch:introduction}
+
+\section{General Description}\label{sec:general}
+This report documents the modelling, identification and position control of a
+DC motor that drives a pointer via a gearbox with belt drive (Box~1 of the
+laboratory test benches). The controlled variable is the angular position of the
+pointer, measured on the output shaft by an optical quadrature encoder. The motor
+is supplied by a PWM-controlled motor driver, and all signals are processed by a
+data acquisition card with MATLAB/Simulink and Simulink Desktop
+Real-Time~\cite{laboranleitung}.
+
+\section{Motivation}\label{sec:motivation}
+DC motors are widely used electro-mechanical actuators, for example in
+automotive applications, medical devices and industrial
+automation~\cite{laboranleitung}. An exact positioning of the driven load
+requires a closed-loop controller, whose design relies on a sufficiently
+accurate model of the plant. Since not all parameters of a real drive train are
+known, the model is derived both analytically and from measured data.
+
+\section{Learning Goal}\label{sec:goal}
+The aim of the laboratory is to identify an electro-mechanical system from its
+measured step response and to design a suitable controller~\cite{laboranleitung}.
+The step response is approximated by a second-order lag element, a PID
+controller is designed with the Ziegler--Nichols method, and the closed loop is
+simulated, implemented on the real test bench and evaluated.
