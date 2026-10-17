@@ -1,23 +1,66 @@
 \documentclass[state=Report]{mcidoc}
 \usepackage{tabularx}
+\usepackage{booktabs}                             % Tabellen ohne vertikale Linien (M057)
+\usepackage{pgfplots}                             % Diagramme direkt in LaTeX
+\pgfplotsset{compat=1.18}
 
+% ---------- Ergänzungen für die MCI-Formalkriterien ----------
+\sisetup{locale = UK, uncertainty-mode = separate} % Dezimalpunkt (M030), Unsicherheit mit ± (M031)
+\KOMAoptions{listof=totoc}                        % Verzeichnisse erscheinen im Inhaltsverzeichnis
+\usepackage[autostyle=true]{csquotes}            % englische Anführungszeichen
+\usepackage[backend=biber, style=ieee]{biblatex}  % IEEE-Zitierstil (M080)
+\addbibresource{references.bib}
+\newcounter{romanpage}
+% Seitenzahl + Name auch auf Kapitel-Startseiten (Stil "plain"), sonst fehlen sie dort (M010)
+\makeatletter
+\ofoot*{\thepage}
+\ifoot*{\Global@StudentName}
+\makeatother
+\KOMAoptions{plainfootsepline=true}
 
-
-% Konfiguration aller Metadaten für den Report (mit erzwungenen Pfaden "/")
 \SetMCI{Language = EN,
     Degree = BSc,
     Title = {Lab Report},
     StudentID = {62200181, 12313575},
-    Student/Name = {Mathias Außerlechner, Benedikt Motzet}, % <--- WICHTIG: Füllt den Namen auf dem Deckblatt aus
-    Report/Supervisor/Name = {FH-Prof. Yeongmi Kim, PhD}, % <--- Supervisor auf dem Deckblatt
-    Report/Cohort = {BA-MECH-24-4C},     % Optional: Kohorte für das Deckblatt
-    Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2}}, % Optional: Vorlesung für das Deckblatt
-    Report/Date = {\today} % Optional: Datum auf dem Deckblatt
+    Student/Name = {Mathias Außerlechner, Benedikt Motzet},
+    Report/Supervisor/Name = {FH-Prof. Yeongmi Kim, PhD},
+    Report/Cohort = {BA-MECH-24-4C},
+    Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2}},
+    Report/Date = {\today},
+    Report/Mode = Lab,                 % "Lab Supervisor" auf dem Deckblatt
+    Report/ToC/Primary = unset,        % Verzeichnisse setzen wir unten selbst
+    Report/ToC/Figures = unset,
+    Report/ToC/Tables  = unset,
 }
 
 \begin{document}
 
+% ---------- Vorspann: römische Seitenzahlen (M010) ----------
+\pagenumbering{Roman}
+\tableofcontents
+\clearpage
+\setcounter{romanpage}{\value{page}}
+\pagenumbering{arabic}
+
+% ---------- Hauptteil: arabische Seitenzahlen ----------
 \include{chapters/introduction}
 
+% ---------- Nachspann: römisch fortlaufend (M011) ----------
+\clearpage
+\pagenumbering{Roman}
+\setcounter{page}{\value{romanpage}}
+
+\printbibliography[heading=bibintoc]
+\listoffigures
+\listoftables
+
+\addchap{List of Symbols}              % Formelzeichenübersicht (M048)
+\begin{tabularx}{\textwidth}{l X l}
+  \textbf{Symbol} & \textbf{Description} & \textbf{Unit} \\
+  \hline
+  $U$ & Voltage    & \unit{\volt}   \\
+  $I$ & Current    & \unit{\ampere} \\
+  $R$ & Resistance & \unit{\ohm}    \\
+\end{tabularx}
 
 \end{document}
