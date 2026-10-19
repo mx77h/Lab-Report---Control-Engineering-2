@@ -1,11 +1,108 @@
 \chapter{Discussion and Interpretation}\label{ch:discussion}
+% GRUNDSATZ: Nur Ergebnisse/Messungen der Gruppe interpretieren, keine neuen Berechnungen.
+% Analytische Werte: Aufgabe31LAB1.mlx (Datenblattwerte Faulhaber 3257G012CR)
 
 \section{Comparison of Measurement, Model and Simulation}\label{sec:comparison}
-% Messung vs. Theorie vs. Simulation, Abweichungen und Ursachen.
+The identified PT2 model reproduces the measured step response of the angular
+velocity well (Figure~\ref{fig:identification}): both the rise and the
+stationary value are matched, and the remaining deviations are mainly caused by
+the noise of the measured signal. This noise results from the calculation of the
+rotational speed from the position change of the incremental encoder between
+two samples~\cite{laboranleitung}, so that the speed is only available in
+discrete steps. The overdamped PT2 structure therefore describes the dynamic
+behaviour of the drive sufficiently for the controller design, which is
+consistent with the analytical model in Equation~\eqref{eq:gp2}. The same
+approach was already successful for the preparatory data, where an additional
+dead time was required to describe the delayed reaction of the system
+(Appendix~\ref{app:prep}).
+
+A comparison with the analytical model shows clear differences. Evaluating
+Equation~\eqref{eq:gp2} with the datasheet values of the motor~\cite{faulhaber3257}
+yields a static gain of \qty{52.36}{\radian\per\second\per\volt} and time
+constants of \qty{4.5}{\milli\second} and \qty{0.18}{\milli\second}. The static
+gain refers to the motor shaft, whereas the identified gain refers to the output
+shaft; both are therefore only comparable when the transmission ratio $N$ is
+taken into account, which brings them into the same order of magnitude. The time
+constants, however, differ substantially: the dominant identified time constant
+$\tau_2 = \qty{0.1030}{\second}$ is more than an order of magnitude larger than
+the analytical one. The main reason is the assumption of an unloaded motor in the
+analytical model. The real test bench additionally contains the gearbox, the
+belt drive and the pointer, whose inertia and friction slow down the system
+considerably. Furthermore, the motor driver and the real friction behaviour are
+not part of the analytical model. The analytical model is thus suitable to
+justify the model structure, while the parameters for the controller design have
+to be identified experimentally.
+
+% TODO: Vergleich Simulation (Figure 3.2) <-> Messung (Runs 1 und 2) ergänzen,
+% sobald die Simulationsergebnisse aus PID_simulation.slx vorliegen.
 
 \section{Controller Performance}\label{sec:performance}
-% Verhält sich das reale System wie erwartet? Wo weicht es ab?
-% Wirkung der Variation von K_p, K_i, K_d.
+The controller designed with the Ziegler--Nichols method stabilises the position
+control loop, but the step response with the calculated parameters (run~2)
+shows an overshoot (Figure~\ref{fig:run2}). This is expected, since the tuning
+rules of Ziegler and Nichols aim at a fast response with a decay ratio of about
+one quarter rather than at a response without overshoot~\cite{ziegler1942}. The
+Ziegler--Nichols parameters are therefore a starting point that has to be
+adjusted on the real system.
+
+The most effective adjustment is the reduction of the integral gain by a factor
+of 100 (run~1), after which no overshoot is visible (Figure~\ref{fig:run1}). This
+can be explained by the structure of the plant: $G_\mathrm{p}(s)$ already
+contains an integrator, so that a constant reference is reached without
+remaining control error even without integral action. A large integral gain
+mainly accumulates the control error during the rise and thus causes the
+overshoot. A small integral gain is nevertheless useful, since it compensates
+constant disturbances such as friction torques. This is confirmed by the
+disturbance test (Figure~\ref{fig:disturbance}), in which the manually deflected
+pointer is returned to the reference.
+
+The variation of the gains shows the expected tendencies. A strongly reduced
+proportional gain (runs~3 and~4) leads to a slow response that has not settled
+at the end of the recording (Figures~\ref{fig:run3} and~\ref{fig:run4}). Since
+the proportional part provides only a small control value in this case, the
+response is presumably dominated by the derivative part directly after the step
+and by the slowly growing integral part afterwards, which drives the position
+beyond the reference. The derivative gain acts as damping: increasing it
+(run~5) suppresses the overshoot, reducing it (run~6) causes an overshoot. An
+increased proportional gain (runs~7 and~8) is possible, and in combination with
+a larger derivative gain (run~8), a well-damped response is obtained.
+
+In all runs, the control value reaches the saturation limit of \qty{12}{\volt}
+directly after the reference step. During this phase, the system is driven with
+the maximum voltage, so that the rise of the position is limited by the
+actuator rather than by the controller gains. This explains why the initial rise
+of the step responses with different gains is very similar
+(Appendix~\ref{app:steps}), and it shows that the linear design does not fully
+describe the real behaviour. The clamping anti-windup prevents the integrator
+from accumulating during the saturation.
+
+The tracking of the sinusoidal reference illustrates the trade-off in the choice
+of the proportional gain (Table~\ref{tab:sine}). A higher gain reduces the
+control error, but it also amplifies the measurement noise of the encoder
+signal, which results in a strongly fluctuating control value at
+\qty{800}{\volt\per\radian} and above (Figures~\ref{fig:sine800}
+and~\ref{fig:sine1200}). Such a control value increases the load on the motor
+and the motor driver; a proportional gain of about \qty{600}{\volt\per\radian}
+is therefore a reasonable compromise for this reference signal.
+
+The results are subject to several limitations. Each parameter set is measured
+only once, so that the reproducibility is not verified, and the recording time
+of \qty{1}{\second} is too short to assess the settling of runs~3 and~4. The
+manual disturbance is not reproducible in magnitude and timing. In addition, the
+plant model is identified from a single step amplitude of \qty{12}{\volt}, so
+that nonlinear effects such as static friction are not captured.
 
 \section{Conclusion}\label{sec:conclusion}
-% Laut Anleitung Pflicht: Schlussfolgerungen.
+The DC motor test bench is successfully modelled, identified and controlled. The
+analytical model confirms the PT2 structure of the drive, while the parameters
+of the real system, including gearbox and belt drive, are obtained by a
+least-squares fit of the measured step response. The Ziegler--Nichols method
+yields a stable PID position controller, which, however, causes an overshoot on
+the real system. Reducing the integral gain removes the overshoot, and a
+combination of an increased proportional and derivative gain (run~8) gives a
+fast and well-damped response. The experiments further show that the actuator
+saturation dominates the behaviour after large reference steps and that the
+achievable proportional gain is limited by the measurement noise. For further
+investigations, repeated measurements, longer recording times and an
+identification at several step amplitudes, including the friction behaviour,
+are recommended.

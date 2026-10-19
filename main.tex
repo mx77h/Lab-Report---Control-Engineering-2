@@ -66,7 +66,7 @@
 \begingroup
 \setlength{\parfillskip}{0pt plus 1fil}  % sonst 10 pt breiter als der Satzspiegel (M057)
 \noindent
-\begin{tabularx}{\textwidth}{l X l}
+\begin{tabularx}{\textwidth}{l X >{\raggedright\arraybackslash}p{0.2\textwidth}}
   \toprule
   Symbol & Description & Unit \\
   \midrule
@@ -74,7 +74,6 @@
   $b$            & viscous friction coefficient & \unit{\newton\metre\second\per\radian} \\
   $\mathbf{b}$   & input vector of the state-space model & -- \\
   $\mathbf{c}$   & output vector of the state-space model & -- \\
-  $d$            & feedthrough of the state-space model & -- \\
   $e$            & control error (reference minus actual position) & \unit{\degree} \\
   $G$            & transfer function & -- \\
   $i$            & armature current & \unit{\ampere} \\
@@ -90,9 +89,10 @@
   $R$            & armature resistance & \unit{\ohm} \\
   $s$            & Laplace variable & \unit{\per\second} \\
   $t$            & time & \unit{\second} \\
-  $T$            & controller time constant ($T_\mathrm{I}$: integral, $T_\mathrm{D}$: derivative)
-                 & \unit{\second} \\
-  $u$            & armature voltage & \unit{\volt} \\
+  $T$            & time constant ($T_\mathrm{I}$: integral time, $T_\mathrm{D}$: derivative time,
+                   $T_\mathrm{t}$: dead time) & \unit{\second} \\
+  $u$            & voltage ($u$: armature voltage; $u_\mathrm{in}$, $u_\mathrm{out}$: input and
+                   output voltage of the preparatory system) & \unit{\volt} \\
   $\mathbf{x}$   & state vector & -- \\
   $\theta$       & angular position & \unit{\radian} \\
   $\tau$         & time constant of the PT2 model & \unit{\second} \\

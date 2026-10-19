@@ -2,7 +2,8 @@
 
 \section{Experimental Setup}\label{sec:setup}
 % Versuchsskizze (M086): beschriftete Abbildung des Aufbaus einfügen.
-The equipment used for the experiment is listed in Table~\ref{tab:equipment}.
+The equipment is listed in Table~\ref{tab:equipment}; the labelled test bench is
+shown in Figure~\ref{fig:testbench} in Appendix~\ref{app:schematic}.
 
 \begin{table}[H]
   \centering
@@ -22,28 +23,20 @@ The equipment used for the experiment is listed in Table~\ref{tab:equipment}.
     DAQ card     & data acquisition card & NI PCIe-6321~\cite{niXseries} \\
     I/O module   & BNC connector block & NI BNC-2090a \\
     Software     & identification, simulation, real-time control
-                 & MATLAB/Simulink \\
+                 & MATLAB/Simulink R2020b, R2024b \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
 \section{Analytical Modelling of the DC Motor}\label{sec:modelling}
 % Quelle: eigene Vorbereitung (preperation31final.mlx), Ersatzschaltbild aus [1]
-The unloaded DC motor is described by a white-box model based on
-Figure~\ref{fig:schematic}. In this report, the motor quantities are written
+The unloaded DC motor is described by a white-box model based on the
+schematic representation in Figure~\ref{fig:schematic} in
+Appendix~\ref{app:schematic}. In this report, the motor quantities are written
 without the index \enquote{mot}, $U_\mathrm{in}$ is denoted by $u$,
 $U_\mathrm{emf}$ by $u_\mathrm{emf}$, and the rotation $n_\mathrm{out}$ is
-described by the angular velocity $\omega$.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.45\textwidth]{img/Schematic representation of the electro-mechanical system.png}
-  \caption[Schematic representation of the DC motor]{Schematic representation
-    of the electro-mechanical system of the DC motor \cite{laboranleitung}}
-  \label{fig:schematic}
-\end{figure}
-
-Kirchhoff's voltage law for the armature circuit with the back electromotive
+described by the angular velocity $\omega$. All symbols are explained in the
+List of Symbols. Kirchhoff's voltage law for the armature circuit with the back electromotive
 force $u_\mathrm{emf} = k_\mathrm{E}\,\omega$ yields
 Equation~\eqref{eq:electrical}, the balance of torques at the rotor yields
 Equation~\eqref{eq:mechanical}.
@@ -55,34 +48,58 @@ Equation~\eqref{eq:mechanical}.
   J\,\frac{\mathrm{d}\omega(t)}{\mathrm{d}t} = k_\mathrm{M}\,i(t) - b\,\omega(t)
   \label{eq:mechanical}
 \end{equation}
-\begin{legendtable}{@{}l@{\quad}l@{\qquad}l@{\quad}l@{}}
-  $u$        & armature voltage, in \unit{\volt}
-    & $J$            & rotor inertia, in \unit{\kilogram\metre\squared} \\
-  $i$        & armature current, in \unit{\ampere}
-    & $b$            & viscous friction, in \unit{\newton\metre\second\per\radian} \\
-  $\omega$   & angular velocity, in \unit{\radian\per\second}
-    & $k_\mathrm{M}$ & torque constant, in \unit{\newton\metre\per\ampere} \\
-  $R$        & armature resistance, in \unit{\ohm}
-    & $k_\mathrm{E}$ & back-EMF constant, in \unit{\volt\second\per\radian} \\
-  $L$        & armature inductance, in \unit{\henry}
-    & $t$            & time, in \unit{\second}
-\end{legendtable}
-
-\medskip\noindent
 With $\omega = \mathrm{d}\theta/\mathrm{d}t$ for the angular position $\theta$,
-the Laplace transformation (capital letters, Laplace variable $s$) yields the
-transfer function from the voltage to the angular velocity, which is a
-second-order lag element (PT2), and to the angular position, which additionally
-contains an integrator. The derivation, both transfer functions and the
-state-space model are given in Appendix~\ref{app:model}.
+the Laplace transformation with zero initial conditions gives
+\begin{equation*}
+  U(s) = (R + L s)\, I(s) + k_\mathrm{E}\, s\, \Theta(s), \qquad
+  J s^2\, \Theta(s) = k_\mathrm{M}\, I(s) - b\, s\, \Theta(s),
+\end{equation*}
+where capital letters denote Laplace transforms and $s$ is the Laplace variable.
+Solving the mechanical equation for $I(s) = (J s^2 + b s)\,\Theta(s)/k_\mathrm{M}$
+and substituting it into the electrical equation yields
+\begin{equation*}
+  U(s) = \left[ \frac{(R + L s)(J s^2 + b s)}{k_\mathrm{M}} + k_\mathrm{E}\, s \right] \Theta(s)
+  = \frac{s \left[ L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M}) \right]}
+         {k_\mathrm{M}}\, \Theta(s).
+\end{equation*}
+The transfer function from the armature voltage to the angular position in
+Equation~\eqref{eq:gp1} is therefore a third-order system with an integrator.
+With $\Omega(s) = s\,\Theta(s)$, the transfer function to the angular velocity in
+Equation~\eqref{eq:gp2} is a second-order lag element (PT2), which justifies the
+PT2 approach in Section~\ref{sec:identification}.
+\begin{equation}
+  G_\mathrm{p1}(s) = \frac{\Theta(s)}{U(s)}
+  = \frac{k_\mathrm{M}}{s \left[ L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M}) \right]}
+  \label{eq:gp1}
+\end{equation}
+\begin{equation}
+  G_\mathrm{p2}(s) = \frac{\Omega(s)}{U(s)} = s\,G_\mathrm{p1}(s)
+  = \frac{k_\mathrm{M}}{L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M})}
+  \label{eq:gp2}
+\end{equation}
+With the state variables
+$\mathbf{x} = \begin{bmatrix} \theta & \omega & i \end{bmatrix}^\mathrm{T}$,
+the input $u$ and the output $\theta$, rearranging Equations~\eqref{eq:electrical}
+and~\eqref{eq:mechanical} for the derivatives gives the state-space model
+\begin{equation*}
+  \dot{\mathbf{x}} =
+  \underbrace{\begin{bmatrix}
+    0 & 1 & 0 \\[0.5ex]
+    0 & -\dfrac{b}{J} & \dfrac{k_\mathrm{M}}{J} \\[1.5ex]
+    0 & -\dfrac{k_\mathrm{E}}{L} & -\dfrac{R}{L}
+  \end{bmatrix}}_{\mathbf{A}} \mathbf{x}
+  + \underbrace{\begin{bmatrix} 0 \\ 0 \\ \dfrac{1}{L} \end{bmatrix}}_{\mathbf{b}} u,
+  \qquad
+  \theta = \underbrace{\begin{bmatrix} 1 & 0 & 0 \end{bmatrix}}_{\mathbf{c}^\mathrm{T}} \mathbf{x}.
+\end{equation*}
 
 \section{System Identification}\label{sec:identification}
 % Daten: matlab.mat (resp_12V), Fit: squarefit.m / PT2.m
 The step response is recorded for an input step of $u_0 = \qty{12}{\volt}$ at
 $t = \qty{0}{\second}$ with a sample time of
 \qty{0.1}{\milli\second}~\cite{laboranleitung}. The encoder provides the
-rotational speed $n$ of the output shaft in \unit{\per\minute} (resolution
-\qty{1}{\per\minute}), which is converted into
+rotational speed $n$ of the output shaft in \unit{\per\minute}, which is
+converted into
 $\omega = 2\pi n / \qty{60}{\second\per\minute}$; $\omega$ thus refers to the
 output shaft, which is slower than the motor shaft by the factor $N$. The plant
 is approximated by an overdamped PT2 element according to
@@ -100,7 +117,8 @@ response
   \omega(t) = u_0 K \left[ 1 - \frac{\tau_1\,\mathrm{e}^{-t/\tau_1}
   - \tau_2\,\mathrm{e}^{-t/\tau_2}}{\tau_1 - \tau_2} \right]
 \end{equation*}
-to the measurement with the MATLAB function \texttt{lsqcurvefit}. Integrating
+to the measurement with the MATLAB function \texttt{lsqcurvefit}. The preparatory
+identification is given in Appendix~\ref{app:prep}. Integrating
 the angular velocity gives the plant for the position control in
 Equation~\eqref{eq:pt3}~\cite{laboranleitung}.
 \begin{equation}
@@ -140,5 +158,5 @@ with a first-order derivative filter (coefficient \qty{100}{\per\second}). The
 control value is limited to \qty{\pm 12}{\volt}, and integrator windup is
 prevented by clamping. For each run, a reference step of \ang{45} is recorded
 for \qty{1}{\second}, while $K_\mathrm{P}$, $K_\mathrm{I}$ and $K_\mathrm{D}$ are
-varied one after another. In addition, a disturbance applied to the pointer and
-the tracking of a sinusoidal reference are recorded.
+varied one after another. A manual disturbance and a sinusoidal reference are
+also tested.

@@ -2,102 +2,257 @@
 % Anhang: zusätzliche Inhalte, die nicht in die 10 Seiten passen.
 % Seitenzahlen laufen römisch weiter (M010), Kapitel werden A, B, C ... nummeriert.
 % Jeder Inhalt hier muss im Haupttext referenziert werden (M053, M060).
+% Daten: data/*.csv, exportiert aus Lab_bennimathiasurs/Measurements/matlab.mat
+% Reglerparameter: Lab_bennimathiasurs/Controll_eng_pid_tuning.xlsx
 % =====================================================================
 
-\chapter{Derivation of the Analytical Model}\label{app:model}
-% Quelle: eigene Vorbereitung (preperation31final.mlx)
-Laplace transformation of Equations~\eqref{eq:electrical}
-and~\eqref{eq:mechanical} with zero initial conditions and
-$\Omega(s) = s\,\Theta(s)$ gives
-\begin{equation*}
-  U(s) = (R + L s)\, I(s) + k_\mathrm{E}\, s\, \Theta(s), \qquad
-  J s^2\, \Theta(s) = k_\mathrm{M}\, I(s) - b\, s\, \Theta(s).
-\end{equation*}
-Solving the mechanical equation for the current,
-\begin{equation*}
-  I(s) = \frac{(J s^2 + b s)\, \Theta(s)}{k_\mathrm{M}},
-\end{equation*}
-and substituting it into the electrical equation yields
-\begin{align*}
-  U(s) &= \left[ \frac{(R + L s)(J s^2 + b s)}{k_\mathrm{M}}
-  + k_\mathrm{E}\, s \right] \Theta(s) \\
-  &= \frac{s \left[ L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M}) \right]}
-         {k_\mathrm{M}}\, \Theta(s),
-\end{align*}
-from which the transfer function from the armature voltage to the angular
-position in Equation~\eqref{eq:gp1} follows. It is a third-order system with an
-integrator, since the angular position is the integral of the angular velocity.
-\begin{equation}
-  G_\mathrm{p1}(s) = \frac{\Theta(s)}{U(s)}
-  = \frac{k_\mathrm{M}}{s \left[ L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M}) \right]}
-  \label{eq:gp1}
-\end{equation}
-With $\Omega(s) = s\,\Theta(s)$, the transfer function from the armature voltage
-to the angular velocity in Equation~\eqref{eq:gp2} is a second-order lag element
-(PT2), which justifies the PT2 approach in Section~\ref{sec:identification}.
-\begin{equation}
-  G_\mathrm{p2}(s) = \frac{\Omega(s)}{U(s)} = s\,G_\mathrm{p1}(s)
-  = \frac{k_\mathrm{M}}{L J s^2 + (R J + L b)\, s + (R b + k_\mathrm{E} k_\mathrm{M})}
-  \label{eq:gp2}
-\end{equation}
+% ---------- Hilfsbefehle für die Diagramme ----------
+% Sprungantwort eines Laufs: #1 Datei, #2 Laufnummer, #3--#5 K_P, K_I, K_D (nur zur Info)
+\newcommand{\steprunfig}[5]{%
+  \ffigbox{\caption[Step response of run~#2]{Measured step response of
+      run~#2 (controller gains see Table~\ref{tab:runs})}\label{fig:run#2}}
+    {\begin{tikzpicture}
+      \begin{axis}[
+          width=0.47\textwidth, height=0.36\textwidth,
+          xlabel={$t$/\unit{\second}}, ylabel={$\theta$/\unit{\degree}},
+          xmin=0, xmax=1, ymin=0, ymax=60,
+          grid=major, grid style={gray!30},
+          legend pos=south east, legend cell align=left,
+          legend style={font=\footnotesize},
+          /pgf/number format/.cd, use period,
+        ]
+        \addplot[black, thick] table[x=t, y=theta, col sep=comma] {data/#1.csv};
+        \addlegendentry{measured}
+        \addplot[black, dotted, thick] table[x=t, y=ref, col sep=comma] {data/#1.csv};
+        \addlegendentry{reference}
+      \end{axis}
+    \end{tikzpicture}}}
 
-For the state-space model, the angular position, the angular velocity and the
-armature current are selected as state variables,
-$\mathbf{x} = \begin{bmatrix} \theta & \omega & i \end{bmatrix}^\mathrm{T}$.
-The armature voltage $u$ is the input and the angular position $\theta$ is the
-output. Rearranging Equations~\eqref{eq:electrical} and~\eqref{eq:mechanical}
-for the derivatives of the state variables gives the state-space model in
-Equation~\eqref{eq:ss}.
-\begin{equation}
-  \dot{\mathbf{x}} = \mathbf{A}\mathbf{x} + \mathbf{b}\,u, \qquad
-  \theta = \mathbf{c}^\mathrm{T}\mathbf{x} + d\,u
-  \label{eq:ss}
-\end{equation}
-with
-\begin{equation*}
-  \mathbf{A} =
-  \begin{bmatrix}
-    0 & 1 & 0 \\[1ex]
-    0 & -\dfrac{b}{J} & \dfrac{k_\mathrm{M}}{J} \\[1.5ex]
-    0 & -\dfrac{k_\mathrm{E}}{L} & -\dfrac{R}{L}
-  \end{bmatrix}, \qquad
-  \mathbf{b} =
-  \begin{bmatrix} 0 \\ 0 \\ \dfrac{1}{L} \end{bmatrix}, \qquad
-  \mathbf{c}^\mathrm{T} = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}, \qquad
-  d = 0.
-\end{equation*}
+% Sinusmessung: #1 Datei, #2 K_P, #3 Label
+\newcommand{\sinerunfig}[3]{%
+  \ffigbox{\caption[Sinusoidal reference, $K_\mathrm{P} = \qty{#2}{\volt\per\radian}$]{Sinusoidal
+      reference: control error and control value for
+      $K_\mathrm{P} = \qty{#2}{\volt\per\radian}$}\label{#3}}
+    {\begin{tikzpicture}
+      % Hintergrund: Stellgröße u (rechte Achse, grau)
+      \begin{axis}[
+          width=0.41\textwidth, height=0.33\textwidth,
+          ylabel={$u$/\unit{\volt}}, xmin=0, xmax=10, ymin=-12, ymax=12,
+          axis y line*=right, axis x line=none,
+          /pgf/number format/.cd, use period,
+        ]
+        \addplot[gray!55, thin] table[x=t, y=u, col sep=comma] {data/#1.csv};
+        \label{plot:u#1}
+      \end{axis}
+      % Vordergrund: Regelabweichung e (linke Achse, schwarz)
+      \begin{axis}[
+          width=0.41\textwidth, height=0.33\textwidth,
+          xlabel={$t$/\unit{\second}}, ylabel={$e$/\unit{\degree}},
+          xmin=0, xmax=10, ymin=-1.2, ymax=1.2,
+          axis y line*=left, grid=major, grid style={gray!30},
+          legend style={at={(0.5,1.03)}, anchor=south, font=\footnotesize},
+          legend columns=2,
+          /pgf/number format/.cd, use period,
+        ]
+        \addplot[black, thick] table[x=t, y=e, col sep=comma] {data/#1.csv};
+        \addlegendentry{control error $e$}
+        \addlegendimage{/pgfplots/refstyle=plot:u#1}\addlegendentry{control value $u$}
+      \end{axis}
+    \end{tikzpicture}}}
 
-\chapter{Additional Measurement Data}\label{app:data}
-% Daten: matlab.mat (sine ... sine5), Parameter: Controll_eng_pid_tuning.xlsx
-% Auswertung für t > 2 s (eingeschwungen)
-In addition to the step responses, the tracking of a sinusoidal reference
-with an amplitude of \ang{10} and a frequency of \qty{0.8}{\hertz} is measured
-for different proportional gains, while $K_\mathrm{I}$ and $K_\mathrm{D}$ are
-kept constant. The results are listed in Table~\ref{tab:sine}.
+% =====================================================================
+\chapter{Test Bench}\label{app:schematic}
+The test bench with its labelled components is shown in
+Figure~\ref{fig:testbench}, the schematic representation used for the
+analytical model in Section~\ref{sec:modelling} in Figure~\ref{fig:schematic}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{img/test_bench.png}
+  \caption[Test bench with labelled components]{Mechanical belt transmission
+    system driven by a DC motor with labelled components \cite{laboranleitung}}
+  \label{fig:testbench}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{img/Schematic representation of the electro-mechanical system.png}
+  \caption[Schematic representation of the DC motor]{Schematic representation
+    of the electro-mechanical system of the DC motor \cite{laboranleitung}}
+  \label{fig:schematic}
+\end{figure}
+
+% =====================================================================
+\chapter{Preparatory System Identification}\label{app:prep}
+% Quelle: Preparation2.m (Ergebnisse der Gruppe), Daten: measurement_data.mat [1]
+% data/preparation_step.csv: Rohdaten + Modellkurve aus pt2_model() mit den Ergebnissen
+As preparatory work, the step response of an arbitrary mechatronic system is
+identified. The measurement data are provided in the file
+\texttt{measurement\_\allowbreak data.mat}~\cite{laboranleitung}.
+Since the output reacts only after a delay, the PT2 element of
+Equation~\eqref{eq:pt2} is extended by a dead time $T_\mathrm{t}$ according to
+Equation~\eqref{eq:pt2dead}.
+\begin{equation}
+  G(s) = \frac{K\,\mathrm{e}^{-T_\mathrm{t} s}}{(\tau_1 s + 1)(\tau_2 s + 1)}
+  \label{eq:pt2dead}
+\end{equation}
+The measured output voltage is normalised to the step amplitude of
+\qty{5.24}{\volt}, and the parameters are determined by a least-squares fit with
+the MATLAB function \texttt{lsqcurvefit}. The fit yields $K = \num{4.9344}$,
+$\tau_1 = \qty{0.0931}{\second}$, $\tau_2 = \qty{0.0253}{\second}$ and
+$T_\mathrm{t} = \qty{0.3140}{\second}$. The raw measurement data and the step
+response of the identified model are shown in Figure~\ref{fig:prep}.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.8\textwidth, height=0.42\textwidth,
+        xlabel={$t$/\unit{\second}}, ylabel={$u$/\unit{\volt}},
+        xmin=0, xmax=2.5, ymin=0, ymax=30,
+        grid=major, grid style={gray!30},
+        legend style={at={(0.97,0.26)}, anchor=south east}, legend cell align=left,
+        /pgf/number format/.cd, use period,
+      ]
+      \addplot[black, dashdotted, thick] table[x=t, y=u_in, col sep=comma] {data/preparation_step.csv};
+      \addlegendentry{input voltage $u_\mathrm{in}$}
+      \addplot[gray, thin] table[x=t, y=u_out, col sep=comma] {data/preparation_step.csv};
+      \addlegendentry{measured output voltage $u_\mathrm{out}$}
+      \addplot[black, dashed, thick] table[x=t, y=u_model, col sep=comma] {data/preparation_step.csv};
+      \addlegendentry{identified PT2 model with dead time}
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Preparatory identification of a PT2 element]{Raw measurement data of
+    the step response provided in~\cite{laboranleitung} (input dash-dotted,
+    output grey) and step response of the identified PT2 model with dead time
+    (dashed)}
+  \label{fig:prep}
+\end{figure}
+
+% =====================================================================
+\chapter{Measured Step Responses}\label{app:steps}
+% Daten: M1--M8; Kennwerte in Table~\ref{tab:runs}
+The measured step responses of all runs in Table~\ref{tab:runs} are shown in
+Figures~\ref{fig:run1} to~\ref{fig:run8}.
+
+\begin{figure}[H]
+  \begin{floatrow}
+    \steprunfig{M1}{1}{195}{22.2}{4.28}
+    \steprunfig{M2}{2}{195}{2219.7}{4.28}
+  \end{floatrow}
+\end{figure}
+\begin{figure}[H]
+  \begin{floatrow}
+    \steprunfig{M3}{3}{1}{22.2}{4.28}
+    \steprunfig{M4}{4}{20}{22.2}{4.28}
+  \end{floatrow}
+\end{figure}
+\begin{figure}[H]
+  \begin{floatrow}
+    \steprunfig{M5}{5}{195}{22.2}{8.00}
+    \steprunfig{M6}{6}{195}{22.2}{1.00}
+  \end{floatrow}
+\end{figure}
+\begin{figure}[H]
+  \begin{floatrow}
+    \steprunfig{M7}{7}{300}{22.2}{4.28}
+    \steprunfig{M8}{8}{300}{22.2}{6.00}
+  \end{floatrow}
+\end{figure}
+
+% =====================================================================
+\chapter{Disturbance and Sinusoidal Reference}\label{app:data}
+% Daten: disturbance, sine ... sine5 (matlab.mat); Sinus-Parameter aus RunPositionController1.slx
+% Beobachtungen aus Controll_eng_pid_tuning.xlsx
+Figure~\ref{fig:disturbance} shows the reaction to a disturbance applied manually to the
+pointer with the controller gains of run~1. For the tracking of a sinusoidal
+reference with an amplitude of \ang{10} and an angular frequency of
+\qty{5}{\radian\per\second}, $K_\mathrm{P}$ is varied while $K_\mathrm{I}$ and
+$K_\mathrm{D}$ are kept constant. The observations are listed in
+Table~\ref{tab:sine}; the tracking is shown
+in Figure~\ref{fig:sine-track}, and the control error and control value for each
+gain in Figures~\ref{fig:sine195} to~\ref{fig:sine1200}.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.8\textwidth, height=0.36\textwidth,
+        xlabel={$t$/\unit{\second}}, ylabel={$\theta$/\unit{\degree}},
+        xmin=1, xmax=10, ymin=43, ymax=48,
+        grid=major, grid style={gray!30},
+        legend pos=north east, legend cell align=left,
+        /pgf/number format/.cd, use period,
+      ]
+      \addplot[black, thick] table[x=t, y=theta, col sep=comma] {data/disturbance.csv};
+      \addlegendentry{measured}
+      \addplot[black, dotted, thick] table[x=t, y=ref, col sep=comma] {data/disturbance.csv};
+      \addlegendentry{reference}
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Reaction to a disturbance]{Measured angular position after the
+    reference step of \ang{45} with a disturbance applied manually to the pointer
+    (controller gains of run~1, section from \qtyrange{1}{10}{\second})}
+  \label{fig:disturbance}
+\end{figure}
 
 \begin{table}[H]
   \centering
-  \caption[Tracking of a sinusoidal reference]{Control error and control value
-    for the tracking of a sinusoidal reference (amplitude \ang{10}, frequency
-    \qty{0.8}{\hertz}) with $K_\mathrm{I} = \qty{22.2}{\volt\per\radian\per\second}$
-    and $K_\mathrm{D} = \qty{4.28}{\volt\second\per\radian}$, evaluated for
-    $t > \qty{2}{\second}$}
+  \caption[Tracking of a sinusoidal reference]{Proportional gains and
+    observations for the tracking of a sinusoidal reference (amplitude \ang{10},
+    angular frequency \qty{5}{\radian\per\second}) with
+    $K_\mathrm{I} = \qty{22.2}{\volt\per\radian\per\second}$ and
+    $K_\mathrm{D} = \qty{4.28}{\volt\second\per\radian}$}
   \label{tab:sine}
-  \begin{tabular}{
-      S[table-format=4.0]
-      S[table-format=1.2]
-      S[table-format=1.2]
-      S[table-format=2.1]
-    }
+  \begin{tabular}{S[table-format=4.0] l}
     \toprule
-    {$K_\mathrm{P}$/(\unit{\volt\per\radian})} & {RMS of $e$/\unit{\degree}}
-      & {max.\ $|e|$/\unit{\degree}} & {max.\ $|u|$/\unit{\volt}} \\
+    {$K_\mathrm{P}$/(\unit{\volt\per\radian})} & Observation \\
     \midrule
-     195 & 0.59 & 0.86 &  3.5 \\
-     300 & 0.38 & 0.59 &  3.6 \\
-     600 & 0.19 & 0.34 &  4.2 \\
-     800 & 0.15 & 0.37 &  6.3 \\
-    1200 & 0.12 & 0.42 & 10.6 \\
+     195 & slightly slow \\
+     300 & control error halved \\
+     600 & control error further reduced \\
+     800 & control value too noisy \\
+    1200 & control value strongly noisy \\
     \bottomrule
   \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.8\textwidth, height=0.36\textwidth,
+        xlabel={$t$/\unit{\second}}, ylabel={$\theta$/\unit{\degree}},
+        xmin=0, xmax=10, ymin=-15, ymax=20,
+        grid=major, grid style={gray!30},
+        legend pos=north east, legend columns=2, legend cell align=left,
+        /pgf/number format/.cd, use period,
+      ]
+      \addplot[black, thick] table[x=t, y=theta, col sep=comma] {data/sine.csv};
+      \addlegendentry{measured}
+      \addplot[black, dotted, thick] table[x=t, y=ref, col sep=comma] {data/sine.csv};
+      \addlegendentry{reference}
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Tracking of a sinusoidal reference]{Measured angular position and
+    sinusoidal reference for $K_\mathrm{P} = \qty{195}{\volt\per\radian}$}
+  \label{fig:sine-track}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{floatrow}
+    \sinerunfig{sine}{195}{fig:sine195}
+    \sinerunfig{sine2}{300}{fig:sine300}
+  \end{floatrow}
+\end{figure}
+\begin{figure}[H]
+  \begin{floatrow}
+    \sinerunfig{sine3}{600}{fig:sine600}
+    \sinerunfig{sine5}{800}{fig:sine800}
+  \end{floatrow}
+\end{figure}
+\begin{figure}[H]
+  \begin{floatrow}
+    \sinerunfig{sine4}{1200}{fig:sine1200}
+  \end{floatrow}
+\end{figure}
