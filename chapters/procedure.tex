@@ -8,7 +8,7 @@ shown in Figure~\ref{fig:testbench} in Appendix~\ref{app:schematic}.
 \begin{table}[H]
   \centering
   \caption[List of equipment]{List of equipment used for the experiment
-    \cite{laboranleitung}}
+   \autocite{laboranleitung}}
   \label{tab:equipment}
   \begin{tabularx}{\textwidth}{l >{\raggedright\arraybackslash}X l}
     \toprule
@@ -16,11 +16,11 @@ shown in Figure~\ref{fig:testbench} in Appendix~\ref{app:schematic}.
     \midrule
     Test bench   & gearbox with belt drive, Box~1, $N = \num{97.2}$ & -- \\
     DC motor     & brushed DC motor, nominal voltage \qty{12}{\volt}
-                 & Faulhaber 3257G012CR~\cite{faulhaber3257} \\
-    Motor driver & PWM-controlled motor driver & Cytron MD13S~\cite{cytronMD13S} \\
+                 & Faulhaber 3257G012CR\autocite{faulhaber3257} \\
+    Motor driver & PWM-controlled motor driver & Cytron MD13S\autocite{cytronMD13S} \\
     Encoder      & quadrature encoder, \num{500} counts per revolution
-                 & Broadcom HEDS-5500 A11~\cite{heds5500} \\
-    DAQ card     & data acquisition card & NI PCIe-6321~\cite{niXseries} \\
+                 & Broadcom HEDS-5500 A11\autocite{heds5500} \\
+    DAQ card     & data acquisition card & NI PCIe-6321\autocite{niXseries} \\
     I/O module   & BNC connector block & NI BNC-2090a \\
     Software     & identification, simulation, real-time control
                  & MATLAB/Simulink R2020b, R2024b \\
@@ -97,7 +97,7 @@ and~\eqref{eq:mechanical} for the derivatives gives the state-space model
 % Daten: matlab.mat (resp_12V), Fit: squarefit.m / PT2.m
 The step response is recorded for an input step of $u_0 = \qty{12}{\volt}$ at
 $t = \qty{0}{\second}$ with a sample time of
-\qty{0.1}{\milli\second}~\cite{laboranleitung}. The encoder provides the
+\qty{0.1}{\milli\second}\autocite{laboranleitung}. The encoder provides the
 rotational speed $n$ of the output shaft in \unit{\per\minute}, which is
 converted into
 $\omega = 2\pi n / \qty{60}{\second\per\minute}$; $\omega$ thus refers to the
@@ -120,7 +120,7 @@ response
 to the measurement with the MATLAB function \texttt{lsqcurvefit}. The preparatory
 identification is given in Appendix~\ref{app:prep}. Integrating
 the angular velocity gives the plant for the position control in
-Equation~\eqref{eq:pt3}~\cite{laboranleitung}.
+Equation~\eqref{eq:pt3}\autocite{laboranleitung}.
 \begin{equation}
   G_\mathrm{p}(s) = \frac{\Theta(s)}{U(s)} = \frac{1}{s}\,G_\mathrm{PT2}(s)
   = \frac{K}{s\,(\tau_1 s + 1)(\tau_2 s + 1)}
@@ -133,7 +133,7 @@ A PID controller according to Equation~\eqref{eq:pid} with the proportional
 gain $K_\mathrm{P}$ in \unit{\volt\per\radian}, the integral and derivative times
 $T_\mathrm{I}$, $T_\mathrm{D}$ in \unit{\second}, $K_\mathrm{I} = K_\mathrm{P}/T_\mathrm{I}$
 and $K_\mathrm{D} = K_\mathrm{P}\,T_\mathrm{D}$ is designed with the closed-loop
-method of Ziegler and Nichols~\cite{ziegler1942}.
+method of Ziegler and Nichols\autocite{ziegler1942}.
 \begin{equation}
   G_\mathrm{c}(s) = K_\mathrm{P} \left( 1 + \frac{1}{T_\mathrm{I}\,s}
   + T_\mathrm{D}\,s \right)
@@ -144,11 +144,11 @@ The critical gain $K_\mathrm{cr}$, at which the closed loop of $G_\mathrm{p}(s)$
 with a pure P controller reaches the stability limit, is determined from the
 root locus with the MATLAB function \texttt{rlocus}, and the period
 $P_\mathrm{cr}$ of the sustained oscillation from the simulated output
-signal~\cite{laboranleitung}. The tuning rules $K_\mathrm{P} = 0.6\,K_\mathrm{cr}$,
+signal\autocite{laboranleitung}. The tuning rules $K_\mathrm{P} = 0.6\,K_\mathrm{cr}$,
 $T_\mathrm{I} = 0.5\,P_\mathrm{cr}$ and $T_\mathrm{D} = 0.125\,P_\mathrm{cr}$
-then give the controller parameters~\cite{ziegler1942}. The closed loop is
+then give the controller parameters\autocite{ziegler1942}. The closed loop is
 simulated in Simulink, with the reference converted from degrees into radians
-before the controller and the output converted back~\cite{laboranleitung}.
+before the controller and the output converted back\autocite{laboranleitung}.
 
 \label{sec:implementation}
 % Einstellungen aus RunPositionController1.slx, Parameter aus Controll_eng_pid_tuning.xlsx

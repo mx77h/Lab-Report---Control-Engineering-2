@@ -13,24 +13,38 @@
   {\par\setstretch{1.1}\noindent\begin{tabular}{#1}}
   {\end{tabular}\par}
 \usepackage[autostyle=true]{csquotes}            % englische Anführungszeichen
-\usepackage[backend=biber, style=ieee]{biblatex}  % IEEE-Zitierstil (M080)
+\usepackage[backend=biber, style=ieee, autocite=superscript]{biblatex}  % IEEE (M080), hochgestellt hinter Satzzeichen (M071): \autocite{...}
 \addbibresource{references.bib}
+% Hochgestellte Zitate MIT eckigen Klammern, z. B. "...text.^[1]" (M071)
+% (Aufbau wie \cite aus numeric-verb, auf dem der IEEE-Stil basiert)
+\DeclareCiteCommand{\supercite}[\mkbibsuperscript]
+  {\bibopenbracket}
+  {\usebibmacro{citeindex}%
+   \ifnumgreater{\value{citecount}}{1}
+     {\bibopenbracket}
+     {}%
+   \usebibmacro{cite}}
+  {\bibclosebracket\supercitedelim}
+  {\bibclosebracket}
 \newcounter{romanpage}
 % Seitenzahl + Name auch auf Kapitel-Startseiten (Stil "plain"), sonst fehlen sie dort (M010)
-\makeatletter
 \ofoot*{\thepage}
-\ifoot*{\Global@StudentName}
-\makeatother
+\ifoot*{Mathias Außerlechner, Benedikt Motzet, Urs Müller}  % Fußzeile ohne Studiengang
 \KOMAoptions{plainfootsepline=true}
 
 \SetMCI{Language = EN,
     Degree = BSc,
-    Title = {Lab Report},
+    Title = {Modelling and Control of DC Motor Speed and Position},  % Bezeichnung des Versuchs (Kap. 10.5)
     StudentID = {62200181, 12313575, 52408872},
-    Student/Name = {Mathias Außerlechner, Benedikt Motzet, Urs Müller},
+    % Deckblatt: Namen mit individuellem Studiengang (Kap. 10.5)
+    % doppelte Klammern, sonst trennen die Kommas im Studiengang die Schlüsselliste
+    % (Fußzeile wird oben mit \ifoot* separat gesetzt)
+    Student/Name = {{Mathias Außerlechner (Mechatronics, Design and Innovation)\newline
+                    Benedikt Motzet (Mechatronics, Design and Innovation)\newline
+                    Urs Müller (Mechatronics, Design and Innovation)}},
     Report/Supervisor/Name = {FH-Prof. Yeongmi Kim, PhD},
     Report/Cohort = {BA-MECH-24-4C},
-    Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2}},
+    Report/Lecture = {Control Engineering \uppercase\expandafter{\romannumeral 2} -- Laboratory},  % Laborübung
     Report/Date = {October 16, 2026},  % Labortermin (Vorgabe Laboranleitung)
     Report/Mode = Lab,                 % "Lab Supervisor" auf dem Deckblatt
     Report/ToC/Primary = unset,        % Verzeichnisse setzen wir unten selbst

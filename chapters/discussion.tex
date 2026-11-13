@@ -8,7 +8,7 @@ velocity well (Figure~\ref{fig:identification}): both the rise and the
 stationary value are matched, and the remaining deviations are mainly caused by
 the noise of the measured signal. This noise results from the calculation of the
 rotational speed from the position change of the incremental encoder between
-two samples~\cite{laboranleitung}, so that the speed is only available in
+two samples\autocite{laboranleitung}, so that the speed is only available in
 discrete steps. The overdamped PT2 structure therefore describes the dynamic
 behaviour of the drive sufficiently for the controller design, which is
 consistent with the analytical model in Equation~\eqref{eq:gp2}. The same
@@ -17,7 +17,7 @@ dead time was required to describe the delayed reaction of the system
 (Appendix~\ref{app:prep}).
 
 A comparison with the analytical model shows clear differences. Evaluating
-Equation~\eqref{eq:gp2} with the datasheet values of the motor~\cite{faulhaber3257}
+Equation~\eqref{eq:gp2} with the datasheet values of the motor\autocite{faulhaber3257}
 yields a static gain of \qty{52.36}{\radian\per\second\per\volt} and time
 constants of \qty{4.5}{\milli\second} and \qty{0.18}{\milli\second}. The static
 gain refers to the motor shaft, whereas the identified gain refers to the output
@@ -41,7 +41,7 @@ The controller designed with the Ziegler--Nichols method stabilises the position
 control loop, but the step response with the calculated parameters (run~2)
 shows an overshoot (Figure~\ref{fig:run2}). This is expected, since the tuning
 rules of Ziegler and Nichols aim at a fast response with a decay ratio of about
-one quarter rather than at a response without overshoot~\cite{ziegler1942}. The
+one quarter rather than at a response without overshoot\autocite{ziegler1942}. The
 Ziegler--Nichols parameters are therefore a starting point that has to be
 adjusted on the real system.
 
