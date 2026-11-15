@@ -1,0 +1,8 @@
+{
+  // VS Code schlägt diese Extensions beim Öffnen des Ordners automatisch zur Installation vor.
+  "recommendations": [
+    "James-Yu.latex-workshop",     // LaTeX kompilieren, PDF-Vorschau, Fehleranzeige
+    "ltex-plus.vscode-ltex-plus",  // Rechtschreib- und Grammatikprüfung (M015)
+    "anthropic.claude-code"        // Claude Code (arbeitet mit CLAUDE.md)
+  ]
+}
