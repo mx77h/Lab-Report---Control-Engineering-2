@@ -79,6 +79,7 @@
 
 \addchap{List of Symbols}              % Formelzeichenübersicht (M049)
 \begingroup
+\setstretch{1.1}                         % gleicher Zeilenabstand wie die übrigen Tabellen (M018)
 \setlength{\parfillskip}{0pt plus 1fil}  % sonst 10 pt breiter als der Satzspiegel (M057)
 \noindent
 \begin{tabularx}{\textwidth}{l X >{\raggedright\arraybackslash}p{0.2\textwidth}}
@@ -101,6 +102,7 @@
   $n$            & rotational speed of the output shaft & \unit{\per\minute} \\
   $N$            & transmission ratio of the gearbox & 1 \\
   $P$            & period of oscillation & \unit{\second} \\
+  $r$            & reference angular position & \unit{\degree} \\
   $R$            & armature resistance & \unit{\ohm} \\
   $s$            & Laplace variable & \unit{\per\second} \\
   $t$            & time & \unit{\second} \\
@@ -116,6 +118,38 @@
 \end{tabularx}
 \par
 \endgroup
+
+% ---------- Erklärung zur KI-Nutzung (Leitfaden Kap. 21.4, Vorlage 21.7) ----------
+% ACHTUNG: Diese Erklärung trifft erst zu, wenn
+%   (1) die Kapitel 2--4 von den Autoren selbst formuliert bzw. überarbeitet sind und
+%   (2) Figure 3.2 durch den eigenen Export aus PID_simulation.slx ersetzt ist.
+% Vor der Abgabe prüfen und ggf. anpassen.
+\addchap{Declaration on the Use of AI Tools}
+We, Mathias Außerlechner, Benedikt Motzet and Urs Müller, hereby declare that
+the following AI-based tool was used to a limited extent in the preparation of
+this laboratory report:
+
+\begin{itemize}
+  \item Claude (Anthropic), used via Claude Code in Visual Studio Code.
+\end{itemize}
+
+\noindent
+The tool was used exclusively for the following purposes:
+
+\begin{itemize}
+  \item Typesetting: creation and correction of the \LaTeX{} code for the
+    document structure, equations, tables and figures, including the plotting
+    of our own measurement data.
+  \item Language: checking grammar and spelling.
+  \item Translation: translation of texts written by the authors into English.
+\end{itemize}
+
+\noindent
+The evaluation of the measurements, the interpretation of the results and the
+scientific argumentation originate exclusively from the authors. No AI tools
+were used to generate or falsify experimental data, figures, statistics or
+results. All AI-assisted output was critically reviewed, checked for
+correctness and revised by the authors. The tool was not used as an author.
 
 % ---------- Anhang: römisch fortlaufend, zählt nicht zu den 10 Seiten ----------
 \appendix

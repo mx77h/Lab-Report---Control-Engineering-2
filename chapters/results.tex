@@ -66,19 +66,51 @@ $T_\mathrm{D} = 0.125 \cdot \qty{0.1757}{\second} = \qty{0.0220}{\second}$, and 
 and $K_\mathrm{D} = K_\mathrm{P}\,T_\mathrm{D}
 = \qty{195}{\volt\per\radian} \cdot \qty{0.0220}{\second}
 = \qty{4.28}{\volt\second\per\radian}$.
-The simulated step response of the closed loop is shown in
-Figure~\ref{fig:simulation}.
+The simulated step response of the closed loop with the adjusted integral gain
+(see Section~\ref{sec:res-realtime}) is shown in Figure~\ref{fig:simulation}.
 
-% PLATZHALTER: durch die eigene Simulation ersetzen (PID_simulation.slx).
-% Achtung: Das Modell ist aktuell auf Sollwert 20 deg, K_I = 22.197 und ohne
-% Anti-Windup eingestellt -> Bildunterschrift an die tatsächlichen Einstellungen anpassen.
+% VORLÄUFIG (vor Abgabe durch eigenen Export ersetzen):
+% erzeugt von Claude durch unveränderten Lauf von Lab_bennimathiasurs/PID_simulation.slx
+% (oberer Kreis mit D2R, Sättigung ±12 V, R2D; Sollwert 20 deg, K_P = 195, K_I = 22.197,
+% K_D = 4.2827, N = 100, kein Anti-Windup). Daten: data/simulation_closed_loop.csv (0--1 s,
+% Solver-Ausgabe linear auf 0.5 ms interpoliert).
 \begin{figure}[H]
   \centering
-  \fbox{\parbox[c][0.3\textwidth][c]{0.78\textwidth}{\centering
-    (Placeholder -- MATLAB: \texttt{PID\_simulation.slx}, Scope of the
-    closed loop)}}
-  \caption[Simulated closed-loop step response]{Simulated angular position of
-    the closed loop with the PID controller}
+  \begin{tikzpicture}
+    \begin{axis}[
+        name=top, width=0.8\textwidth, height=0.3\textwidth,
+        ylabel={$\theta$, $r$, $e$/\unit{\degree}},
+        xmin=0, xmax=1, ymin=-5, ymax=25, xticklabels={},
+        grid=major, grid style={gray!30},
+        legend style={at={(0.98,0.5)}, anchor=east}, legend columns=3, legend cell align=left,
+        legend style={font=\footnotesize},
+        /pgf/number format/.cd, use period,
+      ]
+      \addplot[black, thick] table[x=t, y=theta, col sep=comma] {data/simulation_closed_loop.csv};
+      \addlegendentry{position $\theta$}
+      \addplot[black, dotted, thick] table[x=t, y=r, col sep=comma] {data/simulation_closed_loop.csv};
+      \addlegendentry{reference $r$}
+      \addplot[black, dashed] table[x=t, y=e, col sep=comma] {data/simulation_closed_loop.csv};
+      \addlegendentry{error $e$}
+    \end{axis}
+    \begin{axis}[
+        at={(top.below south west)}, anchor=north west, yshift=-0.3em,
+        width=0.8\textwidth, height=0.22\textwidth,
+        xlabel={$t$/\unit{\second}}, ylabel={$u$/\unit{\volt}},
+        xmin=0, xmax=1, ymin=-15, ymax=15,
+        grid=major, grid style={gray!30},
+        /pgf/number format/.cd, use period,
+      ]
+      \addplot[black, thick] table[x=t, y=u, col sep=comma] {data/simulation_closed_loop.csv};
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Simulated closed-loop step response]{Simulated closed-loop response
+    for a reference step of \ang{20} with
+    $K_\mathrm{P} = \qty{195}{\volt\per\radian}$,
+    $K_\mathrm{I} = \qty{22.2}{\volt\per\radian\per\second}$,
+    $K_\mathrm{D} = \qty{4.28}{\volt\second\per\radian}$ and a control value
+    limited to \qty{\pm 12}{\volt}: angular position, reference and control
+    error (top) and control value (bottom)}
   \label{fig:simulation}
 \end{figure}
 
