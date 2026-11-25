@@ -34,10 +34,12 @@ The unloaded DC motor is described by a white-box model based on
 Figure~\ref{fig:schematic} in Appendix~\ref{app:schematic}, with the motor
 quantities written without the index \enquote{mot}, $U_\mathrm{in}$ as $u$,
 $U_\mathrm{emf}$ as $u_\mathrm{emf}$ and the rotation $n_\mathrm{out}$
-described by $\omega$. Kirchhoff's voltage law for the armature circuit with the back electromotive
-force $u_\mathrm{emf} = k_\mathrm{E}\,\omega$ yields
-Equation~\eqref{eq:electrical}, the balance of torques at the rotor yields
-Equation~\eqref{eq:mechanical}.
+described by $\omega$. %Kirchhoff's voltage law for the armature circuit with the back electromotive
+%force $u_\mathrm{emf} = k_\mathrm{E}\,\omega$ yields
+%Equation~\eqref{eq:electrical}, the balance of torques at the rotor yields
+%Equation~\eqref{eq:mechanical}.
+Using the motor constants $k_\mathrm{E}$ and $k_\mathrm{M}$, the electrical and mechanical 
+dynamics are given by~\eqref{eq:electrical} and~\eqref{eq:mechanical}:
 \begin{equation}
   u(t) = R\,i(t) + L\,\frac{\mathrm{d}i(t)}{\mathrm{d}t} + k_\mathrm{E}\,\omega(t)
   \label{eq:electrical}
@@ -47,27 +49,27 @@ Equation~\eqref{eq:mechanical}.
   \label{eq:mechanical}
 \end{equation}
 % Legende zu den zentralen Gleichungen (M042)
-\begin{legendtable}{@{}l@{\quad}l@{\qquad}l@{\quad}l@{}}
-  $u$        & armature voltage, in \unit{\volt}
-    & $J$            & rotor inertia, in \unit{\kilogram\metre\squared} \\
-  $i$        & armature current, in \unit{\ampere}
-    & $b$            & viscous friction, in \unit{\newton\metre\second\per\radian} \\
-  $\omega$   & angular velocity, in \unit{\radian\per\second}
-    & $k_\mathrm{M}$ & torque constant, in \unit{\newton\metre\per\ampere} \\
-  $R$        & armature resistance, in \unit{\ohm}
-    & $k_\mathrm{E}$ & back-EMF constant, in \unit{\volt\second\per\radian} \\
-  $L$        & armature inductance, in \unit{\henry}
-    & $t$            & time, in \unit{\second}
-\end{legendtable}
+%\begin{legendtable}{@{}l@{\quad}l@{\qquad}l@{\quad}l@{}}
+% $u$        & armature voltage, in \unit{\volt}
+%    & $J$            & rotor inertia, in \unit{\kilogram\metre\squared} \\
+%  $i$        & armature current, in \unit{\ampere}
+%    & $b$            & viscous friction, in \unit{\newton\metre\second\per\radian} \\
+%  $\omega$   & angular velocity, in \unit{\radian\per\second}
+%    & $k_\mathrm{M}$ & torque constant, in \unit{\newton\metre\per\ampere} \\
+%  $R$        & armature resistance, in \unit{\ohm}
+%    & $k_\mathrm{E}$ & back-EMF constant, in \unit{\volt\second\per\radian} \\
+%  $L$        & armature inductance, in \unit{\henry}
+%    & $t$            & time, in \unit{\second}
+%\end{legendtable}
 
 \noindent
 With $\omega = \mathrm{d}\theta/\mathrm{d}t$ for the angular position $\theta$,
 the Laplace transformation with zero initial conditions gives
 \begin{equation*}
   U(s) = (R + L s)\, I(s) + k_\mathrm{E}\, s\, \Theta(s), \qquad
-  J s^2\, \Theta(s) = k_\mathrm{M}\, I(s) - b\, s\, \Theta(s),
+  J s^2\, \Theta(s) = k_\mathrm{M}\, I(s) - b\, s\, \Theta(s).
 \end{equation*}
-where capital letters denote Laplace transforms and $s$ is the Laplace variable.
+%where capital letters denote Laplace transforms and $s$ is the Laplace variable.
 Solving the mechanical equation for $I(s) = (J s^2 + b s)\,\Theta(s)/k_\mathrm{M}$
 and substituting it into the electrical equation yields
 \begin{equation*}
@@ -112,7 +114,7 @@ The step response is recorded for an input step of $u_0 = \qty{12}{\volt}$ at
 $t = \qty{0}{\second}$ (sample time \qty{0.1}{\milli\second}).\autocite{laboranleitung}
 The rotational speed $n$ of the output shaft in \unit{\per\minute} is converted
 into $\omega = 2\pi n / \qty{60}{\second\per\minute}$, which is lower than the
-motor speed by the factor $N$. The plant is approximated by an overdamped PT2
+motor speed by the factor $N$ (transmission ratio of the gearbox). The plant is approximated by an overdamped PT2
 element according to Equation~\eqref{eq:pt2} with the static gain $K$ in
 \unit{\radian\per\second\per\volt} and the time constants $\tau_1$, $\tau_2$ in
 \unit{\second}.
